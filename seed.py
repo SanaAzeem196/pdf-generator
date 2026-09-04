@@ -1,7 +1,10 @@
 import random
 import sqlite3
 from datetime import date, timedelta
-
+# import os
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# DATABASE = os.path.join(BASE_DIR, "report.db")
+ 
 
 DATABASE = "report.db"
 
@@ -28,11 +31,14 @@ CUSTOMERS = [
 ]
 
 
+
+
 def seed_database():
-    connection = sqlite3.connect(DATABASE)
-
-    cursor = connection.cursor()
-
+    with sqlite3.connect(DATABASE) as connection:
+        cursor = connection.cursor()
+        
+#parameterized SQL query
+# created orders table with 200 invented orders (columns: id, customer, product, amount, created_at) and random data for each column.
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +49,7 @@ def seed_database():
         )
     """)
 
-    # Clear existing data so the script is safe to run twice.
+    # Clear existing data so the script is safe to run twice.not 200+200=400 orders, but 200 orders only.
     cursor.execute("DELETE FROM orders")
 
     today = date.today()
@@ -64,8 +70,9 @@ def seed_database():
             (customer, product, amount, created_at.isoformat()),
         )
 
-    connection.commit()
+   
     connection.close()
+
 
     print("Database seeded successfully with 200 orders.")
 
