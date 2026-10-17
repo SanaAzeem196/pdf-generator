@@ -9,7 +9,10 @@ DATABASE = os.path.join(BASE_DIR, "report.db")
 
 
 def getReportData():
-    with sqlite3.connect(DATABASE) as connection:
+    # timeout=30 makes this connection WAIT (instead of immediately
+    # failing with "database is locked") if main.py is mid-transaction
+    # from the POST /reports duplicate-check lock.
+    with sqlite3.connect(DATABASE, timeout=30) as connection:
         cursor = connection.cursor()
 
         # 1. Total orders
@@ -20,7 +23,9 @@ def getReportData():
         cursor.execute("SELECT COALESCE(SUM(amount), 0) FROM orders")
         total_revenue = round(cursor.fetchone()[0], 2)
 
-        # 3. Top 5 products by revenue. Group all orders belonging to the same product, add their amounts together, sort products from highest revenue to lowest, and give me the top 5."
+        # 3. Top 5 products by revenue. Group all orders belonging to the
+        # same product, add their amounts together, sort products from
+        # highest revenue to lowest, and give the top 5.
         cursor.execute("""
             SELECT product, SUM(amount) AS revenue
             FROM orders
@@ -50,7 +55,7 @@ def getReportData():
         ]
 
     connection.close()
-# valid json requires double quotes. 
+
     return {
         "total_orders": total_orders,
         "total_revenue": total_revenue,
