@@ -27,6 +27,9 @@ available at `http://127.0.0.1:8000/docs`.
 - `GET /reports/{report_id}` — get report metadata.
 - `GET /reports/{report_id}/file` — download the PDF.
 
+![alt text](image.png)
+![alt text](image-1.png)
+
 ## How it was created with `uv`
 
 `uv init` creates the minimal project configuration without replacing
